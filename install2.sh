@@ -1,34 +1,41 @@
 #!/bin/bash
 
-source <(curl -s https://raw.githubusercontent.com/R1M-NODES/utils/master/common.sh)
-printLogo
+# Prompt the user to input their reward address
+echo "Please enter your EVM reward address:"
+read REWARD_ADDRESS
 
-# Step 1: Setup
-echo "Step 1: Setup"
-
-if [ -z "$1" ]; then
-  read -p "Enter your reward address (EVM address): " REWARD_ADDRESS
-else
-  REWARD_ADDRESS=$1
+# Check if the address is provided
+if [ -z "$REWARD_ADDRESS" ]; then
+    echo "Error: Reward address cannot be empty!"
+    exit 1
 fi
 
-if [[ ! $REWARD_ADDRESS =~ ^0x[a-fA-F0-9]{40}$ ]]; then
-  echo "Invalid EVM address. Please provide a valid one starting with 0x."
-  exit 1
+# Step 1: Download and run the setup script
+echo "Downloading and executing setup script..."
+curl -L https://github.com/cysic-labs/phase2_libs/releases/download/v1.0.0/setup_linux.sh -o ~/setup_linux.sh
+
+if [ $? -ne 0 ]; then
+    echo "Error downloading setup_linux.sh."
+    exit 1
 fi
 
-echo "Downloading and running the setup script..."
-curl -L https://github.com/cysic-labs/phase2_libs/releases/download/v1.0.0/setup_linux.sh > ~/setup_linux.sh
+chmod +x ~/setup_linux.sh
 bash ~/setup_linux.sh $REWARD_ADDRESS
 
-# Step 2: Start the Verifier Program
-echo "Step 2: Start the Verifier Program"
+if [ $? -ne 0 ]; then
+    echo "Error executing setup_linux.sh."
+    exit 1
+fi
 
-cd ~/cysic-verifier/ || { echo "Verifier directory not found. Ensure setup completed successfully."; exit 1; }
+# Step 2: Navigate to the directory and start the verifier
+echo "Starting the verifier program..."
+cd ~/cysic-verifier/ && bash start.sh
 
-bash start.sh
+if [ $? -ne 0 ]; then
+    echo "Error starting the verifier."
+    exit 1
+fi
 
-echo "🎉 Success! The verifier is now running."
-echo "If you encounter an 'err: rpc error' message, wait a few minutes for the verifier to connect."
-echo "Once connected, you'll see a message like 'start sync data from server,' indicating it is running successfully."
-echo "Your mnemonic files are located in: ~/.cysic/keys/. Keep them safe, or you won't be able to rerun the verifier program."
+# Final message
+echo "Verifier is running. Please wait a few minutes for the connection to establish."
+echo "If you need to reconnect, run: cd ~/cysic-verifier/ && bash start.sh"
