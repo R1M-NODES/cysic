@@ -1,5 +1,8 @@
 #!/bin/bash
 
+source <(curl -s https://raw.githubusercontent.com/R1M-NODES/utils/master/common.sh)
+printLogo
+
 # Prompt the user to input their reward address
 echo "Please enter your EVM reward address:"
 read REWARD_ADDRESS
