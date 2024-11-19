@@ -4,7 +4,12 @@
 source <(curl -s https://raw.githubusercontent.com/R1M-NODES/utils/master/common.sh)
 printLogo
 
-EVM_ADDR=${1:-"ваша-evm-адреса"}
+# Перевірка або запит EVM-адреси
+if [ -z "$1" ]; then
+  read -p "Введіть вашу EVM-адресу: " EVM_ADDR
+else
+  EVM_ADDR=$1
+fi
 
 set -e
 
@@ -34,4 +39,3 @@ services:
 EOF
 
 sudo docker-compose up -d
-
