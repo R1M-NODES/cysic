@@ -24,3 +24,8 @@ screen -r cysic
 ```
 bash <(curl -s https://raw.githubusercontent.com/R1M-NODES/cysic/master/install2.sh)
 ```
+<b> Delete BD </b>
+
+```
+rm -rf  cysic-verifier/data/cysic-verifier.db
+```
